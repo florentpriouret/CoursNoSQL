@@ -1,0 +1,78 @@
+use mydb ;
+db.getSiblingDB('mydb').getCollectionNames(); db.restaurants.find();
+db.restaurants.find({},{"restaurant_id" : 1,"name" :1,"borough" :1,"cuisine" :1});
+db.restaurants.find({},{"restaurant_id" : 1,"name" :1,"borough" :1,"cuisine" :1,"champ _id" :0});
+db.restaurants.find({},{"restaurant_id" : 1,"name" :1,"borough" :1,"address.zipcode" :1,"_id" :0});
+db.restaurants.find({"borough" :"Bronx"},{}).limit(5);
+db.restaurants.find({"borough" :"Bronx"},{}).skip(5).limit(5);
+db.restaurants.find({"grades.score" :{ $elemMatch:{ $gt: 90}}});
+db.restaurants.find({"grades.score" :{ $elemMatch:{ $gt: 80,$lt:100}}});
+db.restaurants.find({"coord.0" :{ $elemMatch:{ $lt:-95.754168}}});
+db.restaurants.find({"grades.score" :{ $elemMatch:{ $gt: 70}},"coord.0" :{ $elemMatch:{ $lt:-65.754168}},cuisine:$ne{'American '}});
+db.restaurants.find({"grades.0" :'A',cuisine:'American ',borough :'Brooklyn'});
+db.restaurants.find().sort( { "cuisine": 1 } );
+db.restaurants.find( { name: /^Wil/ },{"restaurant_id" : 1,"name" :1,"address.street":1,"cusine":1});
+db.restaurants.find( { cuisine: /ces$/ },{"restaurant_id" : 1,"name" :1,"address.street":1,"cusine":1} );
+db.restaurants.find( { name: /Reg/ },{"restaurant_id" : 1,"name" :1,"address.street":1,"cusine":1} );
+db.restaurants.find( { "borough" :"Bronx",$or: [ { "cuisine": "American " }, { "cuisine": "Chinese" } ] } );
+db.restaurants.find({"borough" :{$in :["Staten Island","Queens","Bronxor Brooklyn"]}},{"restaurant_id" : 1,"name":1,"borough":1,"cuisine" :1});
+db.restaurants.find({"borough" :{$nin :["Staten Island","Queens","Bronxor Brooklyn"]}},{"restaurant_id" : 1,"name":1,"borough":1,"cuisine" :1});
+db.restaurants.find({"grade.score":{$lt:10}},{"restaurant_id" : 1,"name":1,"borough":1,"cuisine" :1});
+db.restaurants.find( { name: /^Wil/,"cuisine" :{$nin :["American ","Chinese"]}},{"restaurant_id" : 1,"name":1,"borough":1,"cuisine" :1} );
+db.restaurants.find({"grades": {$elemMatch: {grade: "A",score: 11,date: new Date("2014-08-11T00:00:00Z")}}}, {name: 1,grades: 1});
+db.restaurants.find({"grades.1": {grade: "A",score: 9,date: new Date("2014-08-11T00:00:00Z")}}, {name: 1,grades: 1});
+db.restaurants.find({"address.coord.1" :{  $gt: 42,$lt:52}}, {"restaurant_id" : 1,name: 1,adress: 1,"address.coord":1});
+db.restaurants.find().sort( { "name": 1 } );
+db.restaurants.find().sort( { "name": -1 } );
+db.restaurants.find().sort( { "name": 1 ,"borough":-1} );
+db.restaurants.find({"address.street":null});
+db.restaurants.find({ "address.coord": { $type: 1 } });
+
+db.restaurants.aggregate({"grades.0.grade":"C"},{$group: {"_id": "borough","total": {$sum: 1}}});
+db.restaurants.aggregate({$group: {"_id": "$borough","total": {$sum: 1}}});
+db.restaurants.aggregate([{$unwind: "$grades"},{$group: {"_id": "$borough","moyenne": {$avg: "$grades.score"}}},{$sort: {"moyenne": -1}}])
+
+
+
+update 
+db.restaurants.update (
+   {"_id" : ObjectId("594b9172c96c61e672dcd689")},
+   {$set : {"comment" : "My new comment"}}
+);
+
+
+
+db.restaurants.update (
+   {"grades.grade" : {$not : {$eq : "C"}}},
+   {$set : {"comment" : "acceptable"}}
+);
+
+
+
+db.restaurants.update (
+   {"grades.grade" : {$not : {$eq : "C"}}},
+   {$set : {"comment" : "acceptable"}},
+   {"multi" : true}
+);
+
+db.restaurants.find( {"grades.grade" : {$not : {$eq : "C"}}} ).forEach( 
+    function(restaurant){
+        total = 0;
+        for(i=0 ; i<restaurant.grades.length ; i++){
+            if(restaurant.grades[i].grade == "A")         total += 3;
+            else if(restaurant.grades[i].grade == "B")    total += 1;
+            else                                          total -= 1;
+        }
+        restaurant.note = total;
+        db.restaurants.save(restaurant);
+    }
+);
+db.restaurants.find({}, {"name":1,"_id":0,"note":1,"borough":1}).sort({"note":-1});
+
+
+db.restaurants.remove(
+   {"note":0},
+   {"multi" : true}
+);
+
+db.restaurants.save({"_id" : 1, "test" : 1});
