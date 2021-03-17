@@ -1,0 +1,299 @@
+1 use user		créer
+db.dropDatabase()	supprimer	
+db			voir la db sélectionné
+
+2 db.createCollection('clients')
+
+3.1 db.createCollection('')
+3.2 db.users.insert([
+{
+    "Id": 100,
+    "Name": "John",
+    "TransactionId": "tran1",
+  "Transaction": [
+    {
+    "ItemId":"a100",
+    "price": 200
+    },
+    {
+    "ItemId":"a110",
+    "price": 200  
+    }
+  ],
+  "Subscriber": true,
+  "Payment": {
+    "Type": "Credit-Card",
+    "Total": 400,
+    "Success": true
+  },
+  "Note": "1st Complete Record"
+},
+{
+    "Id": 101,
+    "Name": "Tom",
+    "TransactionId": "tran2",
+  "Transaction": [
+    {
+    "ItemId":"a100",
+    "price": 200
+    },
+    {
+    "ItemId":"a110",
+    "price": 200  
+    }
+  ],
+  "Subscriber": true,
+  "Payment": {
+    "Type": "Debit-Card",
+    "Total": 400,
+    "Success": true
+  },
+  "Note":null
+},
+{
+    "Id": 102,
+    "Name": "Margaret",
+    "TransactionId": "tran3",
+  "Transaction": [
+    {
+    "ItemId":"a100",
+    "price": 200
+    },
+    {
+    "ItemId":"a110",
+    "price": 200  
+    }
+  ],
+  "Subscriber": true,
+  "Payment": {
+    "Type": "Credit-Card",
+    "Total": 400,
+    "Success": true
+  }
+},
+{
+    "Id": 103,
+    "Name": "Dylan",
+    "TransactionId": "tran4",
+  "Transaction": [
+    {
+    "ItemId":"a100",
+    "price": 200
+    },
+    {
+    "ItemId":"a110",
+    "price": 200  
+    }
+  ],
+  "Subscriber": true,
+  "Payment": null,
+  "Note": "Payment is Null"
+}
+])
+
+
+3.3 db.transactions.update([
+{
+    "Id": 100,
+    "Name": "ZZZZZZ",
+    "TransactionId": "tran1",
+  "Transaction": [
+    {
+    "ItemId":"a100",
+    "price": 2000000000
+    },
+    {
+    "ItemId":"a110",
+    "price": 200  
+    }
+  ],
+  "Subscriber": true,
+  "Payment": {
+    "Type": "Credit-Card",
+    "Total": 400,
+    "Success": true
+  },
+  "Note": "1st Complete Record"
+},
+{
+    "Id": 101,
+    "Name": "Tom",
+    "TransactionId": "tran2",
+  "Transaction": [
+    {
+    "ItemId":"a100",
+    "price": 200
+    },
+    {
+    "ItemId":"a110",
+    "price": 200  
+    }
+  ],
+  "Subscriber": true,
+  "Payment": {
+    "Type": "Debit-Card",
+    "Total": 400,
+    "Success": true
+  },
+  "Note":null
+},
+{
+    "Id": 102,
+    "Name": "Margaret",
+    "TransactionId": "tran3",
+  "Transaction": [
+    {
+    "ItemId":"a100",
+    "price": 200
+    },
+    {
+    "ItemId":"a110",
+    "price": 200  
+    }
+  ],
+  "Subscriber": true,
+
+  "Payment": {
+    "Type": "Credit-Card",
+    "Total": 400,
+    "Success": true
+  }
+},
+{
+    "Id": 103,
+    "Name": "Dylan",
+    "TransactionId": "tran4",
+  "Transaction": [
+    {
+    "ItemId":"a100",
+    "price": 200
+    },
+    {
+    "ItemId":"a110",
+    "price": 200  
+    }
+  ],
+  "Subscriber": true,
+  "Payment": null,
+  "Note": "Payment is Null"
+},
+{
+    "Id": 104,
+    "Name": "Oliver",
+    "TransactionId": "tran5",
+  "Transaction": [
+    {
+    "ItemId":"a100",
+    "price": 200
+    },
+    {
+    "ItemId":"a110",
+    "price": 200  
+    }
+  ],
+  "Subscriber": true,
+
+  "Payment": {
+    "Total": 400,
+    "Success": true
+  },
+  "Note": "Payment Type is missing"
+},
+{
+    "Id": 105,
+    "Name": "Sarah",
+    "TransactionId": "tran6",
+  "Transaction": [
+    {
+    "ItemId":"a100",
+    "price": 200
+    },
+    {
+    "ItemId":"a110",
+    "price": 200
+    }
+  ],
+  "Subscriber": true,
+  "Note": "Payment is missing"
+}
+])
+
+
+5.1  db.transactions.find({'Name':'Tom'})
+5.2  db.transactions.find({'Payment.Total':400})
+5.3  db.transactions.find({'Transaction.price':{ $gt: 400 }})
+5.4  db.transactions.find({ "Note": null })
+5.5  db.transactions.find({$and: [ { "Note": null }, { "Note": { $exists: true } } ]})
+5.6  db.transactions.find({ "Note": { $exists: false }})
+
+6.1 db.transactions.aggregate({$group: {_id: '',total: { $sum: '$Payment.Total' }}})
+6.2 db.transactions.aggregate({$unwind :"$Transaction"},{$group: {_id: '$Id',total: { $sum: '$Transaction.price' }}})
+6.3 db.transactions.aggregate({$group: {_id: '$Payment.Type',total: { $sum: '$Payment.Total' }}})
+6.4 db.transactions.aggregate({$group: {_id: '',max: { $max: '$Id' }}})
+6.5 db.transactions.aggregate({$group: {_id: '',max: { $max: '$Transaction.price' }}})
+
+7.1 db.transactions.insert({
+    "Id": 110,
+    "Name": "Inserted Record",
+    "TransactionId": "tranNew1",
+  "Transaction": [
+    {
+    "ItemId":"c324",
+    "price": 456
+    },
+    {
+    "ItemId":"d456",
+    "price": 543
+    }
+  ],
+  "Subscriber": false,
+  "Payment": {
+    "Type": "Debit-Card",
+    "Total": 999,
+    "Success": true
+  },
+  "Note": "Hello World"
+})
+
+7.2 db.transactions.update(
+   {"Id":110},
+   { $set: { "Name": "Updated Record","Note":"Updated!" }}
+)
+
+7.3 db.transactions.remove( {"Id":110} )
+
+8.1 db.createUser(
+  {
+    user: "toto",
+    pwd: "toto1234",
+    roles: [
+       { role: "read", db: "user" },
+       { role: "read", db: "clients" },
+       { role: "read", db: "transactions" }
+    ]
+  }
+)
+
+8.2 db.createUser(
+  {
+    user: "admin",
+    pwd: "passwd",
+    roles: [
+       { role: "userAdminAnyDatabase", db: "user" },
+       { role: "userAdminAnyDatabase", db: "clients" },
+       { role: "userAdminAnyDatabase", db: "transactions" }
+    ]
+  }
+)
+
+8.3 db.createUser(
+  {
+    user: "adminUser",
+    pwd: "passwd",
+    roles: [
+       { role: "userAdminAnyDatabase", db: "user" },
+       { role: "read", db: "clients" },
+       { role: "read", db: "transactions" }
+    ]
+  }
+)
